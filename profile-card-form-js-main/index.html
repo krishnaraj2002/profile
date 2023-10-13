@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" />
+    <link rel="stylesheet" href="css/style.css" />
+    <title>Profile Card form</title>
+	<style>
+		.back-button:hover {
+    background-color: #0056b3; /* Change to your desired hover color */
+}
+   
+	</style>
+</head>
+<body>
+    <form id="profileForm" autocomplete="off">
+        <h2 class="form-header">Profile Info</h2>
+        <input id="username" placeholder="Name" type="text" />
+        <input id="email" placeholder="EmailID" type="text" />
+        <div class="password-container">
+            <input id="password" placeholder="Password" type="password" />
+            <button type="button" id="togglePassword">Show</button>
+        </div>
+        <input id="address" placeholder="Address" type="text" />
+        <textarea name="Bio" id="bio" placeholder="Bio" rows=""></textarea>
+        <input type="file" class="custom-file-input" name="avatar" id="inputAvatar" accept="image/png, image/jpeg" onchange="getAvatarSrc(event)" />
+        <input type="submit" class="btn" value="Add Profile" />
+    </form>
+    <section id="userProfile">
+        <div class="profile-info demo">
+            <div class="avatar">
+                <img id="profileImg" src="img/avatar.svg" alt="avatar" />
+            </div>
+        </div>
+    </section>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const profileImage = document.getElementById('profileImg');
+            const imageUpload = document.getElementById('inputAvatar');
+            const submitButton = document.querySelector('input[type="submit"]');
+            const passwordInput = document.getElementById('password');
+            const togglePassword = document.getElementById('togglePassword');
+
+            // Function to save the profile data in local storage
+            function saveProfileLocally(profileData) {
+                localStorage.setItem('userProfile', JSON.stringify(profileData));
+            }
+
+            // Function to retrieve the profile data from local storage
+            function getProfileLocally() {
+                const storedProfile = localStorage.getItem('userProfile');
+                return storedProfile ? JSON.parse(storedProfile) : null;
+            }
+
+            // Function to save the profile picture in local storage
+            function saveProfilePictureLocally(imageData) {
+                localStorage.setItem('profilePicture', imageData);
+            }
+
+            // Function to retrieve the profile picture from local storage
+            function getProfilePictureLocally() {
+                return localStorage.getItem('profilePicture');
+            }
+
+            // Check if elements exist before attaching event listeners
+            if (profileImage && imageUpload && submitButton && passwordInput && togglePassword) {
+                // Attach event listeners here
+                // Update the profile picture when a new image is selected
+                imageUpload.addEventListener('change', function () {
+                    const file = imageUpload.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function (e) {
+                            const imageData = e.target.result;
+                            profileImage.src = imageData;
+                            // Save the profile picture in local storage
+                            saveProfilePictureLocally(imageData);
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+
+                // Toggle password visibility for profile creation
+                togglePassword.addEventListener('click', function () {
+                    if (passwordInput.type === 'password') {
+                        passwordInput.type = 'text';
+                    } else {
+                        passwordInput.type = 'password';
+                    }
+                });
+
+                // Handle profile creation form submission
+                document.getElementById('profileForm').addEventListener('submit', function (e) {
+                    e.preventDefault();
+
+                    // Get values from the form fields
+                    const username = document.getElementById('username').value;
+                    const email = document.getElementById('email').value;
+                    const password = passwordInput.value;
+                    const bio = document.getElementById('bio').value;
+                    const address = document.getElementById('address').value;
+
+                    // Create a profile object with the collected data
+                    const profileData = {
+                        username,
+                        email,
+                        password,
+                        bio,
+                        address
+                    };
+
+                    // Save the profile data in local storage
+                    saveProfileLocally(profileData);
+
+                    // Redirect to a success page or perform other actions as needed
+                    alert('Profile created successfully!');
+                });
+
+                // Populate the form fields with locally stored profile data
+                const storedProfileData = getProfileLocally();
+                if (storedProfileData) {
+                    document.getElementById('username').value = storedProfileData.username;
+                    document.getElementById('email').value = storedProfileData.email;
+                    document.getElementById('password').value = storedProfileData.password;
+                    document.getElementById('bio').value = storedProfileData.bio;
+                    document.getElementById('address').value = storedProfileData.address;
+                }
+
+                // Retrieve and display the locally stored profile picture
+                const storedProfilePicture = getProfilePictureLocally();
+                if (storedProfilePicture) {
+                    profileImage.src = storedProfilePicture;
+                }
+            }
+        });
+    </script>
+	 <a href="file:///C:/Users/Asus/Desktop/Login_Employee/Login_Employee/dashboard.html"  class="back-button">
+        <i class="fas fa-arrow-left"></i> Back to Dashboard
+    </a>
+</body>
+</html>
